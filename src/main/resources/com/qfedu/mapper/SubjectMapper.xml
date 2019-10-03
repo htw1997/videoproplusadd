@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.mapper.SubjectMapper">
+    <resultMap id="SubjectMap" type="Subject">
+        <id property="id" column="id"/>
+        <result property="subjectName" column="subject_name"/>
+
+    </resultMap>
+
+    <select id="getSubjectById" parameterType="int" resultMap="SubjectMap">
+        select * from subject where id=#{subjectId}
+    </select>
+    <select id="subjectAll" resultMap="SubjectMap">
+        select * from subject
+    </select>
+</mapper>

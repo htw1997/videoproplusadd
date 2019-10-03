@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.mapper.CourseMapper">
+    <resultMap id="courseMap" type="course">
+        <id column="id" property="id"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="course_title" property="courseTitle"/>
+        <result column="course_desc" property="courseDesc"/>
+        <result property="subjectName" column="subject_name"/>
+    </resultMap>
+    <select id="selectAllCourse"  resultMap="courseMap">
+        select c.*, s.subject_name from course c, subject s where c.subject_id = s.id
+    </select>
+
+    <update id="updateCourse" parameterType="com.qfedu.entry.Course">
+    update course c,subject s set course_title=#{courseTitle},course_desc=#{courseDesc},subject_id=#{subjectId} where  c.subject_id=s.id
+</update>
+<insert id="addCourse" parameterType="com.qfedu.entry.Course">
+    insert into course (course_title,course_desc,subject_id) values (#{courseTitle},#{courseDesc},#{subjectId})
+</insert>
+    <select id="selectCourseById" parameterType="int" resultMap="courseMap">
+        select c.*,s.subject_name from course c,subject s  where c.subject_id = s.id and c.id=#{id};
+    </select>
+
+    <delete id="delBatchCourse" parameterType="int">
+        delete from course where
+    </delete>
+    <select id="getCourseBySubjectId" resultMap="courseMap">
+       select * from course where subject_id=#{subjectId}
+    </select>
+
+    <select id="courseAll" resultMap="courseMap">
+        select c.*,s.subject_name from course c,subject s where c.subject_id = s.id
+    </select>
+
+</mapper>

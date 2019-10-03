@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.mapper.VideoMapper">
+
+    <resultMap id="videoMap" type="video">
+        <id property="id" column="id"></id>
+        <result property="title" column="title"/>
+        <result property="detail" column="detail"/>
+        <result property="time" column="time"/>
+        <result property="spearkerId" column="spearker_id"/>
+        <result property="speakerName" column="speaker_name"/>
+        <result property="courseId" column="course_id"/>
+        <result property="videoUrl" column="video_url"/>
+        <result property="videoImageUrl" column="image_url"/>
+        <result property="playNum" column="play_num"/>
+
+        <association property="speaker" javaType="speaker">
+            <id property="id" column="sid"/>
+            <result property="speakerName" column="speaker_name"/>
+            <result property="speakerDesc" column="speaker_desc"/>
+            <result property="headImgUrl" column="head_img_url"/>
+        </association>
+    </resultMap>
+
+    <!--int saveVideo(Video video);-->
+    <!-- 增加视频-->
+    <insert id="saveVideo" parameterType="com.qfedu.entry.Video">
+         insert into video (title,detail,time,spearker_id,course_id,video_url,image_url,play_num) values(#{title},#{detail},#{time},#{spearkerId},#{courseId},#{videoUrl},#{videoImageUrl},#{playNum})
+    </insert>
+
+    <update id="updateVideos" parameterType="video">
+        update video set title=#{title},detail=#{detail},time=#{time},spearker_id=#{spearkerId},course_id=#{courseId},video_url=#{videoUrl},image_url=#{videoImageUrl},play_num=#{playNum} where id=#{id}
+    </update>
+
+
+
+    <select id="selectVideoByQueryVo" parameterType="VideoQueryVo" resultMap="videoMap">
+        select v.*, s.speaker_name from video v, speaker s
+        <where>
+            v.spearker_id = s.id
+            <if test="title != null and title != '' ">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="spearkerId != 0 ">
+                and spearker_id = #{spearkerId}
+            </if>
+            <if test="courseId !=0 ">
+                and course_id =#{courseId}
+            </if>
+        </where>
+        limit #{begin},#{rows}
+    </select>
+
+
+    <delete id="deleteVideosByIds" parameterType="videoQueryVo">
+        delete from video where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectVideoById" parameterType="int" resultType="com.qfedu.entry.Video">
+        select * from video where id=#{id}
+    </select>
+    <select id="getVideoListByCourseId" parameterType="int" resultMap="videoMap">
+        select v.*,s.id sid,s.speaker_name from video v left join speaker s on v.spearker_id=s.id  where course_id=#{courseId}
+    </select>
+    <select id="getVideoById" parameterType="int" resultMap="videoMap">
+        select v.*,s.id sid,s.speaker_name,s.speaker_desc,s.head_img_url  from video v left join speaker s on v.spearker_id = s.id
+        where v.id = #{id}
+    </select>
+    <select id="videoListAll" parameterType="VideoQueryVo" resultMap="videoMap">
+        select v.*, s.speaker_name from video v,speaker s
+        <where>
+            v.spearker_id = s.id
+            <if test="title != null and  title != '' ">
+                and  v.title like concat('%',#{title},'%')
+            </if>
+            <if test="spearkerId != 0">
+                and v.spearker_id = #{spearkerId}
+            </if>
+            <if test="courseId != 0">
+                and v.course_id = #{courseId}
+            </if>
+        </where>
+    </select>
+    <select id="findVideoByCid" parameterType="int" resultMap="videoMap">
+        select v.*, s.speaker_name from video v,speaker s where
+        v.spearker_id = s.id and course_id = #{courseId}
+    </select>
+</mapper>
